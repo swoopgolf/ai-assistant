@@ -1,0 +1,231 @@
+# MCP System Configuration
+# This file contains all configuration settings for the Multi-Agent Framework
+
+# System Information
+system:
+  name: "Multi-Agent Framework"
+  version: "2.0.0"
+  environment: "development"  # development, staging, production
+  
+# Logging Configuration
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/framework.log"
+  max_size_mb: 100
+  backup_count: 5
+  console_output: true
+
+# Security Settings
+security:
+  api_keys:
+    mcp_server: "mcp-dev-key"
+    default_expiry_hours: 24
+  
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 100
+    burst_allowance: 20
+    auth_requests_per_minute: 10
+    
+  authentication:
+    require_api_key: true
+    timing_attack_protection: true
+    failed_attempts_threshold: 5
+    lockout_duration_minutes: 60
+    
+  cors:
+    enabled: true
+    allowed_origins:
+      - "http://localhost:*"
+      - "http://127.0.0.1:*"
+    allowed_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    allowed_headers: ["Content-Type", "Authorization", "X-API-Key"]
+    
+  headers:
+    hsts_max_age: 31536000
+    content_security_policy: "default-src 'self'"
+    x_frame_options: "DENY"
+    x_content_type_options: "nosniff"
+
+# MCP Server Configuration
+mcp_server:
+  host: "localhost"
+  port: 11000
+  workers: 1
+  max_connections: 100
+  timeout_seconds: 30
+  
+  features:
+    health_checks: true
+    security_monitoring: true
+    metrics_collection: true
+    trace_logging: true
+    
+  paths:
+    health: "/health"
+    security_status: "/security/status"
+    tools: "/tools"
+    execute: "/execute"
+
+# Agent Configurations
+agents:
+  orchestrator:
+    name: "Orchestrator Agent"
+    host: "localhost"
+    port: 10005
+    module_path: "orchestrator_agent"
+    description: "Central coordinator for all agent communication"
+    
+    features:
+      task_routing: true
+      mcp_client: true
+      health_monitoring: true
+      
+    timeouts:
+      startup: 30
+      health_check: 10
+      task_execution: 300
+      
+    resources:
+      max_memory_mb: 512
+      max_cpu_percent: 50
+
+  agent_template:
+    name: "Agent Template"
+    host: "localhost"
+    port: 10100
+    module_path: "agent_template"
+    description: "Template/example agent for creating new specialized agents"
+    
+    features:
+      basic_processing: true
+      template_operations: true
+      
+    timeouts:
+      startup: 30
+      health_check: 10
+      task_execution: 60
+      
+    resources:
+      max_memory_mb: 256
+      max_cpu_percent: 25
+
+# Database Configuration (if needed for future enhancements)
+database:
+  enabled: false
+  type: "sqlite"  # sqlite, postgresql, mysql
+  connection:
+    host: "localhost"
+    port: 5432
+    database: "framework_system"
+    username: "framework_user"
+    password: "framework_password"
+  
+  pool:
+    min_connections: 1
+    max_connections: 10
+    connection_timeout: 30
+
+# Monitoring Configuration
+monitoring:
+  enabled: true
+  
+  metrics:
+    collection_interval_seconds: 30
+    retention_hours: 24
+    export_enabled: true
+    export_interval_hours: 6
+    
+  health_checks:
+    interval_seconds: 15
+    timeout_seconds: 5
+    failure_threshold: 3
+    
+  alerts:
+    enabled: false  # Can be enabled for production
+    email_recipients: []
+    slack_webhook: ""
+    
+    thresholds:
+      cpu_percent: 80
+      memory_percent: 85
+      response_time_ms: 1000
+      error_rate_percent: 5
+
+# Development Settings
+development:
+  hot_reload: true
+  debug_mode: true
+  test_data_generation: true
+  mock_external_services: false
+  
+  test_configuration:
+    run_integration_tests: true
+    test_data_cleanup: true
+    performance_benchmarks: false
+
+# Production Settings (overrides for production environment)
+production:
+  logging:
+    level: "WARNING"
+    console_output: false
+    
+  security:
+    api_keys:
+      mcp_server: "${MCP_API_KEY}"  # Environment variable
+      
+    rate_limiting:
+      requests_per_minute: 1000
+      auth_requests_per_minute: 50
+      
+  mcp_server:
+    workers: 4
+    max_connections: 500
+    
+  monitoring:
+    alerts:
+      enabled: true
+      
+  development:
+    hot_reload: false
+    debug_mode: false
+
+# Deployment Configuration
+deployment:
+  strategy: "standalone"  # standalone, docker, kubernetes
+  
+  docker:
+    base_image: "python:3.11-slim"
+    requirements_file: "requirements.txt"
+    exposed_ports: [10005, 10100, 11000]
+    
+  kubernetes:
+    namespace: "framework-system"
+    replicas: 1
+    resource_requests:
+      cpu: "100m"
+      memory: "256Mi"
+    resource_limits:
+      cpu: "500m"
+      memory: "1Gi"
+      
+# External Integrations
+integrations:
+  google_api:
+    enabled: true
+    api_key: "${GOOGLE_API_KEY}"
+    timeout_seconds: 30
+    
+  openai_api:
+    enabled: false
+    api_key: "${OPENAI_API_KEY}"
+    model: "gpt-4"
+
+# Feature Flags
+features:
+  experimental_analysis: false
+  advanced_security: true
+  performance_optimization: true
+  multi_tenant_support: false
+  cloud_deployment: false 
