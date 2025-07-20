@@ -1,0 +1,18 @@
+{
+  "agent_name": "pdf-ingestion-agent",
+  "description": "Specialized agent for extracting menu items and data from PDF documents, processing unstructured content, and inserting new items into the database",
+  "port": 10350,
+  "author_name": "Club Management System",
+  "author_email": "dev@clubmanagement.com", 
+  "capabilities": [
+    "pdf_text_extraction",
+    "ocr_processing",
+    "menu_item_parsing",
+    "structured_data_extraction",
+    "document_analysis",
+    "data_validation",
+    "bulk_item_insertion",
+    "format_detection",
+    "import_reporting"
+  ]
+} 

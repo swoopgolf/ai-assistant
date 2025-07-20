@@ -1,0 +1,229 @@
+{
+  "agent_name": "order-history-qa-agent",
+  "description": "Specialized agent for answering questions about order history, sales analytics, and business intelligence queries using natural language to SQL conversion",
+  "port": 10210,
+  "author_name": "Club Management System",
+  "author_email": "dev@clubmanagement.com",
+  "capabilities": [
+    "sales_analytics",
+    "order_history_queries",
+    "natural_language_to_sql",
+    "business_intelligence",
+    "revenue_reporting",
+    "customer_analytics",
+    "trend_analysis",
+    "performance_metrics"
+  ],
+  "tools": [
+    {
+      "name": "get_sales_summary",
+      "description": "Get sales summary for a specific time period",
+      "parameters": {
+        "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD)"},
+        "end_date": {"type": "string", "description": "End date (YYYY-MM-DD)"},
+        "group_by": {"type": "string", "description": "Grouping option ('day', 'week', 'month')", "default": "day"}
+      },
+      "returns": "Sales summary with totals, order counts, and average order values"
+    },
+    {
+      "name": "get_top_selling_items",
+      "description": "Find the best-selling menu items for a time period",
+      "parameters": {
+        "start_date": {"type": "string", "description": "Start date (YYYY-MM-DD)"},
+        "end_date": {"type": "string", "description": "End date (YYYY-MM-DD)"},
+        "limit": {"type": "integer", "description": "Number of top items to return", "default": 10},
+        "category": {"type": "string", "description": "Optional: filter by menu category", "required": false}
+      },
+      "returns": "List of top-selling items with quantities and revenue"
+    },
+    {
+      "name": "analyze_order_patterns",
+      "description": "Analyze ordering patterns by time, day of week, or other factors",
+      "parameters": {
+        "pattern_type": {"type": "string", "description": "Pattern to analyze ('hourly', 'daily', 'weekly', 'monthly')"},
+        "start_date": {"type": "string", "description": "Start date for analysis"},
+        "end_date": {"type": "string", "description": "End date for analysis"}
+      },
+      "returns": "Pattern analysis with peaks, trends, and insights"
+    },
+    {
+      "name": "get_revenue_metrics",
+      "description": "Calculate key revenue metrics and KPIs",
+      "parameters": {
+        "period": {"type": "string", "description": "Time period ('today', 'yesterday', 'this_week', 'last_week', 'this_month', 'last_month')"},
+        "compare_to_previous": {"type": "boolean", "description": "Include comparison to previous period", "default": true}
+      },
+      "returns": "Revenue metrics with growth rates and comparisons"
+    },
+    {
+      "name": "analyze_customer_behavior",
+      "description": "Analyze customer ordering behavior and loyalty",
+      "parameters": {
+        "metric": {"type": "string", "description": "Metric to analyze ('frequency', 'average_order', 'loyalty', 'churn')"},
+        "start_date": {"type": "string", "description": "Start date for analysis"},
+        "end_date": {"type": "string", "description": "End date for analysis"}
+      },
+      "returns": "Customer behavior insights and segmentation"
+    },
+    {
+      "name": "get_item_performance",
+      "description": "Analyze performance of specific menu items",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of menu item to analyze"},
+        "start_date": {"type": "string", "description": "Start date"},
+        "end_date": {"type": "string", "description": "End date"}
+      },
+      "returns": "Item performance metrics including sales trend, profitability, popularity"
+    },
+    {
+      "name": "execute_custom_query",
+      "description": "Execute a custom analytical SQL query with safety checks",
+      "parameters": {
+        "natural_language_query": {"type": "string", "description": "Natural language description of what to analyze"},
+        "validate_only": {"type": "boolean", "description": "Only validate the query without executing", "default": false}
+      },
+      "returns": "Query results or validation feedback"
+    }
+  ],
+  "database_schema": {
+    "tables": {
+      "orders": {
+        "description": "Main orders table with order-level information",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Primary key", "constraints": ["PRIMARY KEY", "AUTO_INCREMENT"]},
+          "order_number": {"type": "VARCHAR(50)", "description": "Unique order identifier", "constraints": ["UNIQUE"]},
+          "customer_id": {"type": "INTEGER", "description": "Customer ID (if registered)", "constraints": ["FOREIGN KEY"]},
+          "club_id": {"type": "INTEGER", "description": "Club location ID"},
+          "order_date": {"type": "TIMESTAMP", "description": "Date and time of order", "constraints": ["NOT NULL"]},
+          "total_amount": {"type": "DECIMAL(10,2)", "description": "Total order amount", "constraints": ["NOT NULL"]},
+          "tax_amount": {"type": "DECIMAL(10,2)", "description": "Tax amount"},
+          "tip_amount": {"type": "DECIMAL(10,2)", "description": "Tip amount"},
+          "payment_method": {"type": "VARCHAR(50)", "description": "Payment method used"},
+          "order_status": {"type": "VARCHAR(20)", "description": "Order status (completed, cancelled, etc.)"},
+          "order_type": {"type": "VARCHAR(20)", "description": "Order type (dine-in, takeout, delivery)"},
+          "server_id": {"type": "INTEGER", "description": "Staff member who took the order"},
+          "table_number": {"type": "VARCHAR(10)", "description": "Table number for dine-in orders"},
+          "special_instructions": {"type": "TEXT", "description": "Special instructions or notes"},
+          "created_at": {"type": "TIMESTAMP", "description": "Record creation time"},
+          "updated_at": {"type": "TIMESTAMP", "description": "Last update time"}
+        },
+        "indexes": ["order_date", "customer_id", "club_id", "order_status"]
+      },
+      "order_items": {
+        "description": "Individual items within each order",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Primary key"},
+          "order_id": {"type": "INTEGER", "description": "Reference to orders table", "constraints": ["FOREIGN KEY"]},
+          "menu_item_id": {"type": "INTEGER", "description": "Reference to menu_items table", "constraints": ["FOREIGN KEY"]},
+          "item_name": {"type": "VARCHAR(255)", "description": "Item name at time of order"},
+          "quantity": {"type": "INTEGER", "description": "Quantity ordered", "constraints": ["NOT NULL"]},
+          "unit_price": {"type": "DECIMAL(10,2)", "description": "Price per unit at time of order"},
+          "total_price": {"type": "DECIMAL(10,2)", "description": "Total price for this line item"},
+          "modifications": {"type": "JSON", "description": "Any modifications or customizations"},
+          "category": {"type": "VARCHAR(100)", "description": "Item category at time of order"}
+        },
+        "indexes": ["order_id", "menu_item_id", "item_name"]
+      },
+      "customers": {
+        "description": "Customer information for registered users",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Customer ID"},
+          "email": {"type": "VARCHAR(255)", "description": "Customer email"},
+          "phone": {"type": "VARCHAR(20)", "description": "Customer phone"},
+          "first_name": {"type": "VARCHAR(100)", "description": "First name"},
+          "last_name": {"type": "VARCHAR(100)", "description": "Last name"},
+          "registration_date": {"type": "TIMESTAMP", "description": "When customer registered"},
+          "loyalty_points": {"type": "INTEGER", "description": "Current loyalty points"},
+          "total_orders": {"type": "INTEGER", "description": "Total number of orders"},
+          "total_spent": {"type": "DECIMAL(10,2)", "description": "Lifetime spending"},
+          "last_order_date": {"type": "TIMESTAMP", "description": "Date of last order"}
+        }
+      }
+    },
+    "common_queries": [
+      "-- Daily sales summary\nSELECT DATE(order_date) as date, COUNT(*) as orders, SUM(total_amount) as revenue FROM orders WHERE order_status = 'completed' GROUP BY DATE(order_date)",
+      "-- Top selling items\nSELECT oi.item_name, SUM(oi.quantity) as total_sold, SUM(oi.total_price) as revenue FROM order_items oi JOIN orders o ON oi.order_id = o.id WHERE o.order_status = 'completed' GROUP BY oi.item_name ORDER BY total_sold DESC",
+      "-- Customer analytics\nSELECT COUNT(DISTINCT customer_id) as unique_customers, AVG(total_amount) as avg_order_value, COUNT(*) as total_orders FROM orders WHERE order_status = 'completed'"
+    ]
+  },
+  "dependencies": {
+    "required": [
+      "psycopg2-binary>=2.9.0",
+      "sqlalchemy>=2.0.0",
+      "pandas>=2.0.0",
+      "numpy>=1.24.0",
+      "python-dateutil>=2.8.0"
+    ],
+    "optional": [
+      "plotly>=5.0.0",
+      "matplotlib>=3.7.0",
+      "seaborn>=0.12.0"
+    ]
+  },
+  "environment_variables": {
+    "required": {
+      "DB_HOST": {"description": "PostgreSQL host", "default": "34.83.218.41"},
+      "DB_PORT": {"description": "PostgreSQL port", "default": "5432"},
+      "DB_NAME": {"description": "Database name", "default": "byrdi"},
+      "DB_USER": {"description": "Database username"},
+      "DB_PASSWORD": {"description": "Database password"}
+    },
+    "optional": {
+      "ANALYTICS_CACHE_TTL": {"description": "Cache TTL for analytics queries", "default": "3600"},
+      "MAX_QUERY_COMPLEXITY": {"description": "Maximum allowed query complexity score", "default": "100"}
+    }
+  },
+  "custom_prompts": {
+    "system_prompt": "You are a business intelligence analyst for a club restaurant. You have access to complete order history, sales data, and customer information. Always provide data-driven insights with context. When analyzing trends, include percentage changes and comparisons to previous periods. Focus on actionable insights that can help improve business performance.",
+    "sql_generation_prompt": "Generate PostgreSQL queries that are:\n1. Safe (read-only operations only)\n2. Efficient (use appropriate indexes)\n3. Accurate (handle edge cases like cancelled orders)\n4. Well-formatted (readable and maintainable)\n\nAlways filter out cancelled or invalid orders unless specifically requested. Include proper date range handling and consider timezone impacts.",
+    "insight_prompt": "When presenting analysis results:\n1. Start with the key finding\n2. Provide specific numbers and percentages\n3. Add context (comparisons to previous periods)\n4. Suggest actionable insights\n5. Mention any limitations or caveats"
+  },
+  "security_config": {
+    "database_access": "read_only",
+    "allowed_operations": ["SELECT"],
+    "query_validation": {
+      "max_execution_time": 30,
+      "max_rows_returned": 10000,
+      "require_date_filters": true,
+      "blocked_tables": [],
+      "required_where_clauses": ["order_status != 'cancelled'"]
+    },
+    "sensitive_columns": ["customer_email", "customer_phone", "payment_details"],
+    "data_masking": {
+      "enabled": true,
+      "mask_customer_info": true
+    }
+  },
+  "performance_config": {
+    "caching": {
+      "enabled": true,
+      "cache_ttl_seconds": 3600,
+      "cache_expensive_queries": true
+    },
+    "query_optimization": {
+      "use_query_hints": true,
+      "parallel_execution": false,
+      "query_timeout_seconds": 30
+    }
+  },
+  "example_interactions": [
+    {
+      "user_input": "What were our total sales last week?",
+      "expected_tool": "get_sales_summary",
+      "expected_params": {"start_date": "2024-01-15", "end_date": "2024-01-21", "group_by": "day"},
+      "sample_response": "Last week (Jan 15-21), we had total sales of $12,450 across 187 orders. This represents a 15% increase compared to the previous week. Our highest sales day was Saturday with $2,340."
+    },
+    {
+      "user_input": "What's our best-selling item this month?",
+      "expected_tool": "get_top_selling_items", 
+      "expected_params": {"start_date": "2024-01-01", "end_date": "2024-01-31", "limit": 1},
+      "sample_response": "This month, our best-selling item is the Club Sandwich with 89 orders, generating $1,245 in revenue. It's been consistently popular, especially during lunch hours."
+    },
+    {
+      "user_input": "How do our weekend sales compare to weekdays?",
+      "expected_tool": "analyze_order_patterns",
+      "expected_params": {"pattern_type": "weekly", "start_date": "2024-01-01", "end_date": "2024-01-31"},
+      "sample_response": "Weekend sales (Sat-Sun) average $3,200 per day, which is 45% higher than weekday average of $2,210. Saturdays are our strongest day, typically generating 25% more revenue than Sundays."
+    }
+  ]
+} 

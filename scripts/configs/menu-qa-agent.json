@@ -1,0 +1,17 @@
+{
+  "agent_name": "menu-qa-agent", 
+  "description": "Specialized agent for answering questions about current menu items, availability, pricing, ingredients, and dietary restrictions",
+  "port": 10220,
+  "author_name": "Club Management System",
+  "author_email": "dev@clubmanagement.com",
+  "capabilities": [
+    "menu_queries",
+    "item_lookup",
+    "price_inquiry",
+    "availability_check",
+    "dietary_information",
+    "ingredient_search",
+    "category_browsing",
+    "menu_navigation"
+  ]
+} 

@@ -1,0 +1,18 @@
+{
+  "agent_name": "price-update-agent",
+  "description": "Specialized agent for executing menu price updates, item modifications, and availability changes through natural language commands with database write operations",
+  "port": 10410,
+  "author_name": "Club Management System", 
+  "author_email": "dev@clubmanagement.com",
+  "capabilities": [
+    "price_updates",
+    "menu_editing",
+    "item_modifications",
+    "availability_management",
+    "bulk_price_changes",
+    "category_adjustments",
+    "promotional_pricing",
+    "audit_logging",
+    "change_validation"
+  ]
+} 

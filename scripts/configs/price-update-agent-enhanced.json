@@ -1,0 +1,223 @@
+{
+  "agent_name": "price-update-agent",
+  "description": "Specialized agent for executing menu price updates, item modifications, and availability changes through natural language commands with database write operations",
+  "port": 10410,
+  "author_name": "Club Management System", 
+  "author_email": "dev@clubmanagement.com",
+  "capabilities": [
+    "price_updates",
+    "menu_editing",
+    "item_modifications",
+    "availability_management",
+    "bulk_price_changes",
+    "category_adjustments",
+    "promotional_pricing",
+    "audit_logging",
+    "change_validation"
+  ],
+  "tools": [
+    {
+      "name": "update_item_price",
+      "description": "Update the price of a specific menu item",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item to update"},
+        "new_price": {"type": "number", "description": "New price for the item"},
+        "reason": {"type": "string", "description": "Reason for the price change", "required": false},
+        "effective_date": {"type": "string", "description": "When the change should take effect (YYYY-MM-DD)", "required": false}
+      },
+      "returns": "Confirmation of price update with old and new prices",
+      "requires_confirmation": true
+    },
+    {
+      "name": "bulk_price_update",
+      "description": "Update prices for multiple items or categories",
+      "parameters": {
+        "update_type": {"type": "string", "description": "Type of update ('percentage', 'fixed_amount', 'set_price')"},
+        "target": {"type": "string", "description": "Target scope ('category', 'all_items', 'item_list')"},
+        "target_value": {"type": "string", "description": "Category name or comma-separated item list"},
+        "adjustment": {"type": "number", "description": "Percentage, amount, or new price"},
+        "reason": {"type": "string", "description": "Reason for bulk update"},
+        "preview_only": {"type": "boolean", "description": "Only show preview without applying changes", "default": false}
+      },
+      "returns": "List of affected items with old and new prices",
+      "requires_confirmation": true
+    },
+    {
+      "name": "update_item_availability",
+      "description": "Change availability status of menu items",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item"},
+        "available": {"type": "boolean", "description": "New availability status"},
+        "reason": {"type": "string", "description": "Reason for availability change", "required": false},
+        "estimated_return": {"type": "string", "description": "When item will be available again (if making unavailable)", "required": false}
+      },
+      "returns": "Confirmation of availability change"
+    },
+    {
+      "name": "set_promotional_pricing",
+      "description": "Set temporary promotional pricing for items",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item"},
+        "promo_price": {"type": "number", "description": "Promotional price"},
+        "start_date": {"type": "string", "description": "Promotion start date (YYYY-MM-DD)"},
+        "end_date": {"type": "string", "description": "Promotion end date (YYYY-MM-DD)"},
+        "promo_name": {"type": "string", "description": "Name/description of the promotion"}
+      },
+      "returns": "Confirmation of promotional pricing setup"
+    },
+    {
+      "name": "revert_price_change",
+      "description": "Revert a recent price change",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item"},
+        "change_id": {"type": "string", "description": "ID of the change to revert", "required": false}
+      },
+      "returns": "Confirmation of price reversion"
+    },
+    {
+      "name": "get_price_history",
+      "description": "View price change history for an item",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item"},
+        "days_back": {"type": "integer", "description": "Number of days of history to show", "default": 30}
+      },
+      "returns": "Price change history with dates, old/new prices, and reasons"
+    },
+    {
+      "name": "validate_price_change",
+      "description": "Validate a proposed price change without applying it",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the item"},
+        "new_price": {"type": "number", "description": "Proposed new price"}
+      },
+      "returns": "Validation results including warnings and recommendations"
+    }
+  ],
+  "database_schema": {
+    "tables": {
+      "menu_items": {
+        "description": "Main menu items table (write access)",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Primary key"},
+          "name": {"type": "VARCHAR(255)", "description": "Item name", "constraints": ["UNIQUE"]},
+          "description": {"type": "TEXT", "description": "Item description"},
+          "price": {"type": "DECIMAL(10,2)", "description": "Current price", "constraints": ["NOT NULL", "CHECK (price > 0)"]},
+          "category": {"type": "VARCHAR(100)", "description": "Menu category"},
+          "is_available": {"type": "BOOLEAN", "description": "Availability status", "default": true},
+          "cost": {"type": "DECIMAL(10,2)", "description": "Item cost for profit margin calculation"},
+          "updated_at": {"type": "TIMESTAMP", "description": "Last update time", "auto_update": true},
+          "updated_by": {"type": "VARCHAR(100)", "description": "Who made the last update"}
+        }
+      },
+      "price_history": {
+        "description": "Audit log of all price changes",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Change ID"},
+          "menu_item_id": {"type": "INTEGER", "description": "Reference to menu item"},
+          "old_price": {"type": "DECIMAL(10,2)", "description": "Previous price"},
+          "new_price": {"type": "DECIMAL(10,2)", "description": "New price"},
+          "change_reason": {"type": "TEXT", "description": "Reason for change"},
+          "changed_by": {"type": "VARCHAR(100)", "description": "User who made the change"},
+          "changed_at": {"type": "TIMESTAMP", "description": "When change was made"},
+          "effective_date": {"type": "DATE", "description": "When change takes effect"}
+        }
+      },
+      "promotional_pricing": {
+        "description": "Temporary promotional pricing",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Promotion ID"},
+          "menu_item_id": {"type": "INTEGER", "description": "Reference to menu item"},
+          "promo_price": {"type": "DECIMAL(10,2)", "description": "Promotional price"},
+          "start_date": {"type": "DATE", "description": "Promotion start date"},
+          "end_date": {"type": "DATE", "description": "Promotion end date"},
+          "promo_name": {"type": "VARCHAR(255)", "description": "Promotion name"},
+          "is_active": {"type": "BOOLEAN", "description": "Whether promotion is currently active"}
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "required": [
+      "psycopg2-binary>=2.9.0",
+      "sqlalchemy>=2.0.0",
+      "pydantic>=2.0.0",
+      "python-dateutil>=2.8.0"
+    ],
+    "optional": [
+      "redis>=4.5.0"
+    ]
+  },
+  "environment_variables": {
+    "required": {
+      "DB_HOST": {"description": "PostgreSQL host", "default": "34.83.218.41"},
+      "DB_PORT": {"description": "PostgreSQL port", "default": "5432"},
+      "DB_NAME": {"description": "Database name", "default": "byrdi"},
+      "DB_USER": {"description": "Database username"},
+      "DB_PASSWORD": {"description": "Database password"}
+    },
+    "optional": {
+      "REQUIRE_APPROVAL": {"description": "Whether price changes require approval", "default": "false"},
+      "MAX_PRICE_INCREASE": {"description": "Maximum allowed price increase percentage", "default": "50"},
+      "AUDIT_LOG_RETENTION": {"description": "Days to retain audit logs", "default": "365"}
+    }
+  },
+  "custom_prompts": {
+    "system_prompt": "You are a menu pricing specialist with the ability to update prices and availability for menu items. Always confirm the details before making changes. Calculate and mention profit margins when relevant. Be cautious with large price increases and always log the reason for changes. When updating multiple items, provide a clear summary of all changes.",
+    "confirmation_prompt": "Before applying price changes, confirm:\n1. Item name and current price\n2. New price and change amount/percentage\n3. Reason for the change\n4. When the change takes effect\n\nFor bulk changes, show a preview of all affected items.",
+    "validation_prompt": "When validating price changes:\n1. Check if increase/decrease is reasonable (typically <50%)\n2. Ensure price maintains healthy profit margin\n3. Compare to similar items in the category\n4. Consider impact on customer ordering patterns\n5. Verify price formatting (correct decimal places)"
+  },
+  "security_config": {
+    "database_access": "read_write",
+    "allowed_operations": ["SELECT", "UPDATE", "INSERT"],
+    "change_limits": {
+      "max_price_increase_percent": 50,
+      "max_price_decrease_percent": 50,
+      "max_bulk_items": 100,
+      "require_reason_above_percent": 20
+    },
+    "approval_workflow": {
+      "enabled": false,
+      "approval_required_above_percent": 30,
+      "approval_required_for_bulk": true
+    },
+    "audit_requirements": {
+      "log_all_changes": true,
+      "require_change_reason": true,
+      "track_user_actions": true
+    }
+  },
+  "validation_rules": {
+    "price_validation": {
+      "min_price": 0.01,
+      "max_price": 999.99,
+      "decimal_places": 2,
+      "require_positive": true
+    },
+    "business_rules": {
+      "maintain_margin": true,
+      "check_competitor_pricing": false,
+      "validate_category_consistency": true,
+      "warn_on_large_changes": true
+    }
+  },
+  "example_interactions": [
+    {
+      "user_input": "Increase the price of the Caesar Salad to $15",
+      "expected_tool": "update_item_price",
+      "expected_params": {"item_name": "Caesar Salad", "new_price": 15.00, "reason": "Price adjustment request"},
+      "sample_response": "I'll update the Caesar Salad price from $13.95 to $15.00 (7.5% increase). This change will take effect immediately. The item will maintain a healthy profit margin. Change has been logged for audit purposes."
+    },
+    {
+      "user_input": "Raise all appetizer prices by 10%",
+      "expected_tool": "bulk_price_update",
+      "expected_params": {"update_type": "percentage", "target": "category", "target_value": "appetizers", "adjustment": 10, "preview_only": true},
+      "sample_response": "Preview of 10% price increase for appetizers:\n- Spinach Dip: $8.95 → $9.85\n- Wings: $12.95 → $14.25\n- Nachos: $10.95 → $12.05\n\nTotal of 8 items would be affected. Would you like me to apply these changes?"
+    },
+    {
+      "user_input": "Mark the fish and chips as out of stock",
+      "expected_tool": "update_item_availability",
+      "expected_params": {"item_name": "Fish and Chips", "available": false, "reason": "Out of stock"},
+      "sample_response": "I've marked Fish and Chips as unavailable. Customers will no longer see this item as an option. When you're ready to make it available again, just let me know."
+    }
+  ]
+} 
