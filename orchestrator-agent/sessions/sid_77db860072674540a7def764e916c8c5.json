@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_77db860072674540a7def764e916c8c5",
+  "created_at": "2025-07-21T12:20:45.640208",
+  "last_updated": "2025-07-21T12:20:45.640208",
+  "history": [
+    {
+      "event_id": "evt_7625641297404c168147171956c7366b",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T12:20:45.640208",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "menu-qa-agent",
+          "skill": "process_task",
+          "description": "What vegetarian items are available?"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "menu-qa-agent",
+    "skill": "process_task",
+    "description": "What vegetarian items are available?"
+  }
+}

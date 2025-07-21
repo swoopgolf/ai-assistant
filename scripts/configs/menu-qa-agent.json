@@ -1,17 +1,190 @@
 {
-  "agent_name": "menu-qa-agent", 
+  "agent_name": "menu-qa-agent",
   "description": "Specialized agent for answering questions about current menu items, availability, pricing, ingredients, and dietary restrictions",
   "port": 10220,
   "author_name": "Club Management System",
   "author_email": "dev@clubmanagement.com",
   "capabilities": [
     "menu_queries",
-    "item_lookup",
+    "item_lookup", 
     "price_inquiry",
     "availability_check",
     "dietary_information",
     "ingredient_search",
     "category_browsing",
     "menu_navigation"
+  ],
+  "tools": [
+    {
+      "name": "get_menu_item",
+      "description": "Retrieve detailed information about a specific menu item by name or ID",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the menu item to look up"},
+        "item_id": {"type": "integer", "description": "Optional: ID of the menu item", "required": false}
+      },
+      "returns": "Dictionary with item details including name, price, description, category, allergens, availability"
+    },
+    {
+      "name": "search_menu_by_category", 
+      "description": "Search for menu items within a specific category",
+      "parameters": {
+        "category": {"type": "string", "description": "Category to search (e.g., 'appetizers', 'entrees', 'beverages')"},
+        "include_unavailable": {"type": "boolean", "description": "Whether to include out-of-stock items", "default": false}
+      },
+      "returns": "List of menu items in the specified category"
+    },
+    {
+      "name": "search_by_dietary_restriction",
+      "description": "Find menu items that meet specific dietary requirements", 
+      "parameters": {
+        "restriction": {"type": "string", "description": "Dietary restriction (e.g., 'vegetarian', 'vegan', 'gluten-free', 'dairy-free')"},
+        "category": {"type": "string", "description": "Optional: limit search to specific category", "required": false}
+      },
+      "returns": "List of menu items meeting the dietary restriction"
+    },
+    {
+      "name": "get_item_price",
+      "description": "Get current price for a menu item",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the menu item"}
+      }, 
+      "returns": "Current price of the item"
+    },
+    {
+      "name": "check_availability",
+      "description": "Check if a menu item is currently available",
+      "parameters": {
+        "item_name": {"type": "string", "description": "Name of the menu item"}
+      },
+      "returns": "Boolean indicating availability status"
+    },
+    {
+      "name": "search_by_ingredient",
+      "description": "Find menu items containing or excluding specific ingredients",
+      "parameters": {
+        "ingredient": {"type": "string", "description": "Ingredient to search for"},
+        "exclude": {"type": "boolean", "description": "Whether to exclude items with this ingredient", "default": false}
+      },
+      "returns": "List of menu items containing/excluding the ingredient"
+    },
+    {
+      "name": "get_full_menu",
+      "description": "Retrieve the complete menu organized by categories",
+      "parameters": {
+        "include_unavailable": {"type": "boolean", "description": "Include out-of-stock items", "default": false},
+        "format": {"type": "string", "description": "Output format ('summary' or 'detailed')", "default": "summary"}
+      },
+      "returns": "Complete menu data organized by categories"
+    }
+  ],
+  "database_schema": {
+    "tables": {
+      "menu_items": {
+        "description": "Main table containing all menu items",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Primary key", "constraints": ["PRIMARY KEY", "AUTO_INCREMENT"]},
+          "name": {"type": "VARCHAR(255)", "description": "Item name", "constraints": ["NOT NULL", "UNIQUE"]},
+          "description": {"type": "TEXT", "description": "Item description and ingredients"},
+          "price": {"type": "DECIMAL(10,2)", "description": "Current price", "constraints": ["NOT NULL"]},
+          "category": {"type": "VARCHAR(100)", "description": "Menu category (appetizers, entrees, beverages, etc.)"},
+          "is_available": {"type": "BOOLEAN", "description": "Whether item is currently available", "default": true},
+          "allergens": {"type": "JSON", "description": "Array of allergen information"},
+          "dietary_flags": {"type": "JSON", "description": "Array of dietary flags (vegetarian, vegan, gluten-free, etc.)"},
+          "prep_time_minutes": {"type": "INTEGER", "description": "Preparation time in minutes"},
+          "club_id": {"type": "INTEGER", "description": "ID of the club this menu belongs to"},
+          "created_at": {"type": "TIMESTAMP", "description": "When item was added"},
+          "updated_at": {"type": "TIMESTAMP", "description": "Last modification time"}
+        },
+        "indexes": ["name", "category", "club_id", "is_available"]
+      },
+      "menu_categories": {
+        "description": "Reference table for menu categories",
+        "columns": {
+          "id": {"type": "INTEGER", "description": "Category ID"},
+          "name": {"type": "VARCHAR(100)", "description": "Category name"},
+          "display_order": {"type": "INTEGER", "description": "Order for menu display"},
+          "club_id": {"type": "INTEGER", "description": "Club ID"}
+        }
+      }
+    },
+    "sample_queries": [
+      "SELECT * FROM menu_items WHERE name ILIKE '%burger%' AND is_available = true",
+      "SELECT * FROM menu_items WHERE category = 'beverages' AND JSON_CONTAINS(dietary_flags, '\"gluten-free\"')",
+      "SELECT category, COUNT(*) as item_count FROM menu_items WHERE is_available = true GROUP BY category"
+    ]
+  },
+  "dependencies": {
+    "required": [
+      "psycopg2-binary>=2.9.0",
+      "sqlalchemy>=2.0.0", 
+      "pydantic>=2.0.0"
+    ],
+    "optional": [
+      "asyncpg>=0.28.0",
+      "redis>=4.5.0"
+    ]
+  },
+  "environment_variables": {
+    "required": {
+      "DB_HOST": {"description": "PostgreSQL host", "default": "34.83.218.41"},
+      "DB_PORT": {"description": "PostgreSQL port", "default": "5432"},
+      "DB_NAME": {"description": "Database name", "default": "byrdi"},
+      "DB_USER": {"description": "Database username"},
+      "DB_PASSWORD": {"description": "Database password"}
+    },
+    "optional": {
+      "REDIS_URL": {"description": "Redis cache URL for performance"},
+      "LOG_LEVEL": {"description": "Logging level", "default": "INFO"}
+    }
+  },
+  "custom_prompts": {
+    "system_prompt": "You are a specialized menu assistant for a club restaurant. You have access to complete menu information including items, prices, ingredients, dietary restrictions, and availability. Always provide accurate, helpful information about menu items. When users ask about dietary restrictions, be thorough in checking all relevant flags and allergen information.",
+    "tool_selection_prompt": "Based on the user's question about the menu, select the most appropriate tool:\n- For specific item lookup: use get_menu_item\n- For browsing by type: use search_menu_by_category  \n- For dietary needs: use search_by_dietary_restriction\n- For ingredient questions: use search_by_ingredient\n- For pricing: use get_item_price\n- For availability: use check_availability\n- For general browsing: use get_full_menu",
+    "error_handling": "If a menu item is not found, suggest similar items or ask for clarification. If multiple items match, present options to the user. Always mention if an item is currently unavailable."
+  },
+  "security_config": {
+    "database_access": "read_only",
+    "allowed_operations": ["SELECT"],
+    "rate_limiting": {
+      "requests_per_minute": 100,
+      "burst_allowance": 20
+    },
+    "input_validation": {
+      "max_query_length": 500,
+      "allowed_sql_keywords": ["SELECT", "WHERE", "ORDER BY", "GROUP BY", "HAVING", "LIMIT"],
+      "blocked_patterns": ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "CREATE"]
+    }
+  },
+  "performance_config": {
+    "caching": {
+      "enabled": true,
+      "cache_ttl_seconds": 300,
+      "cache_key_prefix": "menu_qa"
+    },
+    "query_optimization": {
+      "use_indexes": true,
+      "max_results_per_query": 50,
+      "query_timeout_seconds": 10
+    }
+  },
+  "example_interactions": [
+    {
+      "user_input": "What vegetarian options do you have?",
+      "expected_tool": "search_by_dietary_restriction",
+      "expected_params": {"restriction": "vegetarian"},
+      "sample_response": "We have several vegetarian options including our Garden Salad ($12), Vegetable Pasta ($16), and Caprese Sandwich ($14). All are marked as vegetarian-friendly on our menu."
+    },
+    {
+      "user_input": "How much is the Caesar Salad?",
+      "expected_tool": "get_item_price", 
+      "expected_params": {"item_name": "Caesar Salad"},
+      "sample_response": "The Caesar Salad is $13.95. It comes with romaine lettuce, parmesan cheese, croutons, and our house-made Caesar dressing."
+    },
+    {
+      "user_input": "Do you have any gluten-free beers?",
+      "expected_tool": "search_by_dietary_restriction",
+      "expected_params": {"restriction": "gluten-free", "category": "beverages"},
+      "sample_response": "Yes! We have two gluten-free beer options: Omission Lager ($6) and Glutenberg IPA ($7). Both are certified gluten-free."
+    }
   ]
 } 

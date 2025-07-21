@@ -1,0 +1,37 @@
+{
+    "name": "classification-agent",
+    "description": "AI-powered query classification agent that categorizes user requests and provides routing decisions",
+    "version": "1.0.0",
+    "port": 10300,
+    "capabilities": [
+        "classify_query",
+        "route_requests", 
+        "extract_parameters"
+    ],
+    "supported_query_types": [
+        "menu_inquiry",
+        "order_history", 
+        "price_update",
+        "pdf_ingestion",
+        "general"
+    ],
+    "agent_mapping": {
+        "menu_inquiry": "menu-qa-agent",
+        "order_history": "order-history-qa-agent",
+        "price_update": "price-update-agent", 
+        "pdf_ingestion": "pdf-ingestion-agent",
+        "general": "menu-qa-agent"
+    },
+    "health_endpoint": "/health",
+    "openapi_endpoint": "/openapi.json",
+    "dependencies": [
+        "openai>=1.0.0",
+        "python-dotenv>=1.0.1"
+    ],
+    "environment_requirements": [
+        "OPENAI_API_KEY"
+    ],
+    "startup_command": "python -m classification_agent",
+    "dockerfile_path": "../Dockerfile",
+    "role": "classifier"
+} 

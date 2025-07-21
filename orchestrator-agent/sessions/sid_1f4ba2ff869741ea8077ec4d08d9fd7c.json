@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_1f4ba2ff869741ea8077ec4d08d9fd7c",
+  "created_at": "2025-07-21T01:30:41.592213",
+  "last_updated": "2025-07-21T01:30:41.593211",
+  "history": [
+    {
+      "event_id": "evt_362dfb42de5a4662b916a1ad9cc1b453",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T01:30:41.593211",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "order-history-qa-agent",
+          "skill": "process_task_skill",
+          "description": "Show me business analytics"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "order-history-qa-agent",
+    "skill": "process_task_skill",
+    "description": "Show me business analytics"
+  }
+}

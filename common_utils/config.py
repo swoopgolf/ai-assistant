@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     )
     
     # Google API Configuration
-    google_api_key: str
+    google_api_key: str = "AIzaSyBTuhZECpwbFPd7cayaFMsia0RIbVdzlSk"
     
     # MCP Configuration
     mcp_api_key: str = "mcp-dev-key"  # Default for development, should be set in production
@@ -102,4 +102,11 @@ AGENT_MODEL = settings.agent_model
 ENABLE_SAFETY_CHECKS = settings.enable_safety_checks
 MAX_INPUT_LENGTH = settings.max_input_length
 LOG_LEVEL = settings.log_level
-MCP_SERVER_URL = settings.mcp_server_url 
+MCP_SERVER_URL = settings.mcp_server_url
+
+def get_config(key: str, default=None):
+    """Get configuration value by key for backward compatibility."""
+    if key == "agents":
+        # Return empty dict for agents config since we don't have a registry yet
+        return {}
+    return getattr(settings, key, default) 

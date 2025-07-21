@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_caed42e0e5df498091c44d0ca61bba1a",
+  "created_at": "2025-07-21T12:12:36.549853",
+  "last_updated": "2025-07-21T12:12:36.549853",
+  "history": [
+    {
+      "event_id": "evt_88ea3dcf3ba249c8b851608dc0e548ec",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T12:12:36.549853",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "menu-qa-agent",
+          "skill": "process_task_skill",
+          "description": "What vegetarian options do we have on the menu?"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "menu-qa-agent",
+    "skill": "process_task_skill",
+    "description": "What vegetarian options do we have on the menu?"
+  }
+}

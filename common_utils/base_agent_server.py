@@ -293,11 +293,12 @@ class BaseAgentServer:
                     # Wait a moment for server to be fully ready
                     await asyncio.sleep(1)
                     agent_url = f"http://{host}:{self.port}"
-                    discovery_client = AgentDiscoveryClient(
+                    # Correctly initialize the client without arguments
+                    discovery_client = AgentDiscoveryClient()
+                    success = await discovery_client.register_self(
                         agent_name=self.agent.agent_name,
                         agent_url=agent_url
                     )
-                    success = await discovery_client.register_self()
                     if success:
                         logger.info(f"✅ Agent {self.agent.agent_name} registered with discovery service")
                     else:
@@ -307,6 +308,8 @@ class BaseAgentServer:
         
         try:
             logger.info("Starting server with uvicorn.run...")
+            print(f"--> {self.title} running on http://{host}:{self.port}")
+            print(f"    Interactive API docs available at: http://{host}:{self.port}/docs")
             uvicorn.run(
                 self.app,
                 host=host,
@@ -318,6 +321,7 @@ class BaseAgentServer:
         except Exception as e:
             logger.error(f"Failed to start server: {e}")
             import traceback
+            traceback.print_exc()
             logger.error(f"Traceback: {traceback.format_exc()}")
             raise
 

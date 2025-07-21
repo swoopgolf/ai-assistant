@@ -199,6 +199,9 @@ agent_*.tmp
 pipeline_*.json
 session_*.json
 
+# Legacy code
+old-code/
+
 # Large generated reports
 report_*.html
 analysis_*.pdf

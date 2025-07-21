@@ -30,7 +30,7 @@ def main():
         executor=executor,
         agent_name="orchestrator",
         title="Orchestrator Agent",
-        port=10005,
+        port=10200,
         agent_description="Central coordinator for the multi-agent framework. Dispatches tasks to specialized agents.",
         version="2.0.0",
         custom_health_data={

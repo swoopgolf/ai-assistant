@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_3b963d20adba4b6083958c3a12b5e733",
+  "created_at": "2025-07-21T01:30:37.542196",
+  "last_updated": "2025-07-21T01:30:37.542196",
+  "history": [
+    {
+      "event_id": "evt_d2003fbfb8a046739306667089b86829",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T01:30:37.542196",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "price-update-agent",
+          "skill": "process_task_skill",
+          "description": "Update the price of burgers to 12.99"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "price-update-agent",
+    "skill": "process_task_skill",
+    "description": "Update the price of burgers to 12.99"
+  }
+}

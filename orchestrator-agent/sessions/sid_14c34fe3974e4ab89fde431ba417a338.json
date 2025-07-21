@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_14c34fe3974e4ab89fde431ba417a338",
+  "created_at": "2025-07-21T12:26:50.460204",
+  "last_updated": "2025-07-21T12:26:50.460204",
+  "history": [
+    {
+      "event_id": "evt_fd1c2f6b2a544347b64ee79df9d1caaf",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T12:26:50.460204",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "menu-qa-agent",
+          "skill": "process_task",
+          "description": "dietary restriction vegetarian"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "menu-qa-agent",
+    "skill": "process_task",
+    "description": "dietary restriction vegetarian"
+  }
+}

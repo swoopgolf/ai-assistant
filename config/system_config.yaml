@@ -15,6 +15,29 @@ agents:
       health_check: 10
       startup: 30
       task_execution: 60
+  menu_qa_agent:
+    description: Specialized agent for answering questions about current menu items,
+      availability, pricing, ingredients, and dietary restrictions
+    features:
+      availability_check: true
+      category_browsing: true
+      dietary_information: true
+      ingredient_search: true
+      item_lookup: true
+      menu_navigation: true
+      menu_queries: true
+      price_inquiry: true
+    host: localhost
+    module_path: menu_qa_agent
+    name: Menu Qa Agent
+    port: 10220
+    resources:
+      max_cpu_percent: 50
+      max_memory_mb: 512
+    timeouts:
+      health_check: 10
+      startup: 30
+      task_execution: 120
   orchestrator:
     description: Central coordinator for all agent communication
     features:
@@ -32,7 +55,78 @@ agents:
       health_check: 10
       startup: 30
       task_execution: 300
-
+  order_history_qa_agent:
+    description: Specialized agent for answering questions about order history, sales
+      analytics, and business intelligence queries using natural language to SQL conversion
+    features:
+      business_intelligence: true
+      customer_analytics: true
+      natural_language_to_sql: true
+      order_history_queries: true
+      performance_metrics: true
+      revenue_reporting: true
+      sales_analytics: true
+      trend_analysis: true
+    host: localhost
+    module_path: order_history_qa_agent
+    name: Order History Qa Agent
+    port: 10210
+    resources:
+      max_cpu_percent: 50
+      max_memory_mb: 512
+    timeouts:
+      health_check: 10
+      startup: 30
+      task_execution: 120
+  pdf_ingestion_agent:
+    description: Specialized agent for extracting menu items and data from PDF documents,
+      processing unstructured content, and inserting new items into the database
+    features:
+      bulk_item_insertion: true
+      data_validation: true
+      document_analysis: true
+      format_detection: true
+      import_reporting: true
+      menu_item_parsing: true
+      ocr_processing: true
+      pdf_text_extraction: true
+      structured_data_extraction: true
+    host: localhost
+    module_path: pdf_ingestion_agent
+    name: Pdf Ingestion Agent
+    port: 10350
+    resources:
+      max_cpu_percent: 50
+      max_memory_mb: 512
+    timeouts:
+      health_check: 10
+      startup: 30
+      task_execution: 120
+  price_update_agent:
+    description: Specialized agent for executing menu price updates, item modifications,
+      and availability changes through natural language commands with database write
+      operations
+    features:
+      audit_logging: true
+      availability_management: true
+      bulk_price_changes: true
+      category_adjustments: true
+      change_validation: true
+      item_modifications: true
+      menu_editing: true
+      price_updates: true
+      promotional_pricing: true
+    host: localhost
+    module_path: price_update_agent
+    name: Price Update Agent
+    port: 10410
+    resources:
+      max_cpu_percent: 50
+      max_memory_mb: 512
+    timeouts:
+      health_check: 10
+      startup: 30
+      task_execution: 120
 database:
   connection:
     database: framework_system

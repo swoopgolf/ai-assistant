@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_55eb979f150349928c2f7cd0db44d273",
+  "created_at": "2025-07-21T01:30:29.443584",
+  "last_updated": "2025-07-21T01:30:29.443584",
+  "history": [
+    {
+      "event_id": "evt_6b434f56e7884f9db8364ec2bfde9e91",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T01:30:29.443584",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "order-history-qa-agent",
+          "skill": "process_task_skill",
+          "description": "What were the total sales last week?"
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "order-history-qa-agent",
+    "skill": "process_task_skill",
+    "description": "What were the total sales last week?"
+  }
+}

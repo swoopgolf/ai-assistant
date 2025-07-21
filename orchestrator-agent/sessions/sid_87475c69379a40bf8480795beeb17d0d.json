@@ -1,0 +1,33 @@
+{
+  "session_id": "sid_87475c69379a40bf8480795beeb17d0d",
+  "created_at": "2025-07-21T12:29:45.194043",
+  "last_updated": "2025-07-21T12:29:45.194043",
+  "history": [
+    {
+      "event_id": "evt_58386b3b14ff46879ca6883af0d63720",
+      "event_type": "session_created",
+      "timestamp": "2025-07-21T12:29:45.194043",
+      "details": {
+        "metadata": {
+          "task": "delegation",
+          "target_agent": "menu-qa-agent",
+          "skill": "process_task",
+          "description": ""
+        }
+      }
+    }
+  ],
+  "state": {
+    "data_handles": {},
+    "user_preferences": {},
+    "intermediate_results": {},
+    "current_step": null,
+    "error_log": []
+  },
+  "metadata": {
+    "task": "delegation",
+    "target_agent": "menu-qa-agent",
+    "skill": "process_task",
+    "description": ""
+  }
+}

@@ -28,8 +28,9 @@ from pydantic import BaseModel, Field
 import uvicorn
 import inspect
 
-from ..security import SecurityManager, security_manager
-from ..types import AgentCapabilities
+# Use absolute import path
+from common_utils.security import SecurityManager, security_manager
+from common_utils.types import AgentCapabilities
 
 logger = logging.getLogger(__name__)
 
@@ -167,4 +168,23 @@ class McpToolServer:
 
     def run(self, host: str = "0.0.0.0", port: int = 8100):
         logger.info(f"Starting MCP Tool Server on {host}:{port}")
-        uvicorn.run(self.app, host=host, port=port) 
+        uvicorn.run(self.app, host=host, port=port)
+
+def main():
+    """Main entry point for running the MCP Tool Server directly."""
+    logging.basicConfig(level=logging.INFO)
+    
+    server = McpToolServer(
+        title="MCP Tool Server",
+        description="A server for hosting and exposing tools via the Model Context Protocol.",
+        version="1.0.0"
+    )
+    
+    # In a real application, you would register your tools here.
+    # For now, we start an empty server that can be discovered.
+    
+    # Port 11001 is used to avoid conflicts.
+    server.run(host="127.0.0.1", port=11001)
+
+if __name__ == "__main__":
+    main() 

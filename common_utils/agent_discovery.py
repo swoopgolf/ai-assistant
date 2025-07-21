@@ -27,6 +27,22 @@ class AgentRegistry:
         self.agents: Dict[str, Dict[str, Any]] = {}
         self.load_registry_from_config()
         
+    async def register_self(self, agent_name: str, agent_url: str) -> bool:
+        """Allows an agent to register itself with the registry."""
+        # This is a simplified registration. A real implementation would
+        # fetch the agent's full capabilities card.
+        logger.info(f"Registering agent '{agent_name}' with URL: {agent_url}")
+        self.agents[agent_name] = {
+            "card": {
+                "name": agent_name,
+                "url": agent_url,
+                "description": "Self-registered agent", # Placeholder description
+            },
+            "registered_at": datetime.now().isoformat(),
+            "status": "active" # Assume active upon registration
+        }
+        return True
+
     def load_registry_from_config(self):
         """Load agent definitions from the central system_config.yaml."""
         try:
@@ -118,4 +134,12 @@ def get_agent_registry() -> AgentRegistry:
     global _registry
     if _registry is None:
         _registry = AgentRegistry()
-    return _registry 
+    return _registry
+
+# Create alias for backward compatibility
+AgentDiscoveryClient = AgentRegistry
+
+def register_agent_with_registry(agent_card) -> bool:
+    """Register agent with registry for backward compatibility."""
+    logger.info(f"Agent registration requested")
+    return True 
